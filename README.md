@@ -25,7 +25,8 @@ after the migration number, such as text describing the migration.
 schematic creates a table (named in settings.py) with one column, that
 holds one row, which describes the current version of the database.  Any
 migration file with a number greater than the current version will be
-applied to the database and the version tracker will be upgraded.
+applied to the database and the version tracker will be upgraded.  The
+migration and version bump are performed in a transaction.
 
 The version-tracking table will initially be set to 0, so the 0th
 migration could be a script that creates all your tables (for
