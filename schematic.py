@@ -141,10 +141,11 @@ def table_check(db, table):
 
 
 def find_upgrades():
-    files = [p for p in os.listdir(ROOT) if os.path.isfile(p)]
+    fullpath = lambda p: os.path.join(ROOT, p)
+    files = [p for p in map(fullpath, os.listdir(ROOT)) if os.path.isfile(p)]
     upgrades = {}
     for f in files:
-        m = re.match('^(\d+)', f)
+        m = re.match('^(\d+)', os.path.basename(f))
         if m:
             upgrades[int(m.group(0))] = f
     return upgrades
