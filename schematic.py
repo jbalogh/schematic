@@ -62,7 +62,7 @@ COUNT   = 'SELECT COUNT(version) FROM %s;'
 SELECT  = 'SELECT version FROM %s;'
 INSERT  = 'INSERT INTO %s (version) VALUES (%s);'
 UPDATE  = 'UPDATE %s SET version = %s;'
-UPGRADE = 'BEGIN;\n %s\n %s\nCOMMIT;'
+UPGRADE = 'BEGIN;\n%s\n%s\nCOMMIT;'
 
 
 class SchematicError(Exception):
