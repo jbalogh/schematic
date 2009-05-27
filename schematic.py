@@ -50,14 +50,17 @@ Things that might be nice: downgrades, running python files.
 """
 
 import getopt
-import imp
 import os
 import re
 import sys
 from subprocess import Popen, PIPE
 
+try:
+    import settings
+except ImportError, e:
+    print "You must create a settings.py and put it in your PYTHONPATH"
+    raise e
 
-ROOT = os.path.realpath(os.path.dirname(__file__))
 
 SETTINGS = 'settings'
 VARIABLES = ['db', 'table']
@@ -97,6 +100,7 @@ def DbError(self, cmd, stdout, stderr, returncode):
                          "stderr: %s", "returncode: %s"])
         return msg % (cmd, stdout, stderr, returncode)
 
+
 def get_args(argv):
     try:
         opts, args = getopt.getopt(argv[1:], "h", ["help"])        
@@ -115,10 +119,12 @@ def get_args(argv):
     except getopt.GetoptError, Error:
         signalError(argv[0])
 
+
 def usage(name):
     print """Usage: %s [OPTIONS]...  path/to/schema_files
     OPTIONS
     help    Dishplay this help and exit""" % name
+
     
 def signalError(program_name, message=None):
     if message != None:
@@ -126,24 +132,16 @@ def signalError(program_name, message=None):
     usage(program_name)
     sys.exit(2)
 
-def get_settings():
-    try:
-        # Find the settings file next to this script.
-        fp, pathname, description = imp.find_module(SETTINGS, [ROOT])
-        module = imp.load_module(SETTINGS, fp, pathname, description)
-        fp.close()
-    except ImportError, e:
-        raise MissingSettings(os.path.join(ROOT, SETTINGS + '.py'))
 
-    settings = {}
+def ensure_settings():
+    conf = {}
     for k in VARIABLES:
         try:
-            v = getattr(module, k)
-            settings[k] = v
+            getattr(settings, k)
         except AttributeError:
             raise SettingsError(k)
 
-    return settings
+    return conf
 
 
 def say(db, command):
@@ -173,10 +171,12 @@ def table_check(db, table):
 
 
 def find_upgrades(schema_dir):
-    fullpath = lambda p: os.path.join(ROOT, p)
-    files = [p for p in map(fullpath, os.listdir(schema_dir)) if os.path.isfile(p)]    
+    fullpath = lambda p: os.path.join(schema_dir, p)
+    files = [p for p in map(fullpath, os.listdir(schema_dir)) if os.path.isfile(p)]
+    
     upgrades = {}
     for f in files:
+        print os.path.basename(f)
         m = re.match('^(\d+)', os.path.basename(f))
         if m:
             upgrades[int(m.group(0))] = f
@@ -206,9 +206,9 @@ def get_version(db, table):
 def main(argv):
     schema_dir = get_args(argv)
     
-    settings = get_settings()
-    db = settings['db']
-    table = settings['table']
+    ensure_settings()
+    db = settings.db
+    table = settings.table
     
     table_check(db, table)
     run_upgrades(db, table, schema_dir)
