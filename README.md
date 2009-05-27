@@ -1,11 +1,13 @@
 The worst schema versioning system, ever?
 
+Usage: schematic.py path/to/schema_files
+
 schematic talks to your database over stdin on the command line.  Thus,
 it supports all DBMSs that have a command line interface and doesn't
 care what programming language you worship.  Win!
 
-It only looks for files in the same directory as itself so you should
-put this script, settings.py, and all migrations in the same directory.
+Schematic expects 1 argument which is the directory full of schema and
+DDL files you wish to mirgrate.
 
 Configuration is done in `settings.py`, which should look something like:
 
@@ -16,6 +18,7 @@ Configuration is done in `settings.py`, which should look something like:
 
 It's python so you can do whatever crazy things you want, and it's a
 separate file so you can keep local settings out of version control.
+Make sure settings.py is in your PYTHONPATH.
 
 Migrations are just sql in files whose names start with a number, like
 `001-adding-awesome.sql`.  They're matched against `'^\d+'` so you can
