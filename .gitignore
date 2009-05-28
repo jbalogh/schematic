@@ -1,3 +1,10 @@
 *.pyc
 settings.py
 *.sql
+.Python
+bin
+include
+lib
+man
+share
+src
