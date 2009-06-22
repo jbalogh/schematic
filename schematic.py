@@ -74,10 +74,12 @@ class SchematicError(Exception):
 
 def exception(f):
     """Decorator to turn a function into an subclass of SchematicError."""
-    def __init__(self, *args, **kwargs):
-        msg = f(self, *args, **kwargs)
-        super(self.__class__, self).__init__(msg)
-    return type(f.__name__, (SchematicError,), {'__init__': __init__})
+    class E(SchematicError):
+        def __init__(self, *args, **kwargs):
+            msg = f(self, *args, **kwargs)
+            SchematicError.__init__(self, msg)
+    E.__name__ = f.__name__
+    return E
 
 
 @exception
