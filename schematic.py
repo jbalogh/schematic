@@ -184,12 +184,20 @@ def main(schema_dir):
     run_upgrades(db, table, schema_dir)
 
 
+def update(schema_dir, version):
+    settings = get_settings(schema_dir)
+    say(settings.db, UPDATE % (settings.table, version))
+
+
 if __name__ == '__main__':
     d = '/path/to/migrations/dir'
     error = "Expected a directory: %s" % d
 
     # No arguments yet, but we'll get there.
     parser = optparse.OptionParser(usage="Usage: %%prog %s" % d)
+    parser.add_option('-u', '--update', dest='update', default=False,
+                      help='Update schema tracking table to this version '
+                           '(without running any migrations)')
     options, args = parser.parse_args()
 
     if len(args) != 1:
@@ -200,6 +208,9 @@ if __name__ == '__main__':
         parser.error(error)
 
     try:
-        main(path)
+        if options.update:
+            update(path, options.update)
+        else:
+            main(path)
     except SchematicError, e:
         print 'Error:', e
