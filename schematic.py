@@ -54,6 +54,7 @@ import optparse
 import os
 import re
 import sys
+import time
 from subprocess import Popen, PIPE
 
 
@@ -162,7 +163,10 @@ def run_upgrades(db, table, schema_dir):
     upgrades = [(version, path) for version, path in all_upgrades
                 if version > current]
     for version, path in sorted(upgrades):
+        start = time.time()
         upgrade(db, table, version, path)
+        print 'That took %.2f seconds' % (time.time() - start)
+        print '#' * 50, '\n'
 
 
 def upgrade(db, table, version, path):
