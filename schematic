@@ -105,9 +105,12 @@ def get_settings(schema_dir):
     sys.path.append(schema_dir)
 
     try:
-        import settings
+        import schematic_settings
     except ImportError, e:
-        raise MissingSettings
+        try:
+            import settings
+        except ImportError, e:
+            raise MissingSettings
 
     print settings
     for k in VARIABLES:
