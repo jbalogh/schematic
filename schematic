@@ -109,6 +109,7 @@ def get_settings(schema_dir):
     except ImportError, e:
         raise MissingSettings
 
+    print settings
     for k in VARIABLES:
         try:
             getattr(settings, k)
