@@ -39,7 +39,7 @@ reference).  Migration numbers are not required to increase linearly.
 schematic doesn't pretend to be intelligent. Running migrations manually
 without upgrading the version tracking will throw things off.
 
-Tested on sqlite any mysql.
+Tested on sqlite and mysql.
 
 NOTE: any superfluous output, like column headers, will cause an error.
 On mysql, this is fixed by using the `--silent` parameter.
