@@ -196,6 +196,11 @@ def update(schema_dir, version):
     say(settings.db, UPDATE % (settings.table, version))
 
 
+def version(schema_dir):
+    settings = get_settings(schema_dir)
+    print get_version(settings.db, settings.table)
+
+
 if __name__ == '__main__':
     d = '/path/to/migrations/dir'
     error = "Expected a directory: %s" % d
@@ -205,6 +210,10 @@ if __name__ == '__main__':
     parser.add_option('-u', '--update', dest='update', default=False,
                       help='Update schema tracking table to this version '
                            '(without running any migrations)')
+    parser.add_option('-v', '--version', dest='version', default=False,
+                      action='store_true',
+                      help='Print the current schema version (without '
+                           'running any migrations)')
     options, args = parser.parse_args()
 
     if len(args) != 1:
@@ -217,6 +226,8 @@ if __name__ == '__main__':
     try:
         if options.update:
             update(path, options.update)
+        elif options.version:
+            version(path)
         else:
             main(path)
     except SchematicError, e:
