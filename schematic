@@ -160,12 +160,15 @@ def find_upgrades(schema_dir):
     return upgrades
 
 
-def run_upgrades(db, table, schema_dir):
+def run_upgrades(db, table, schema_dir, maximum=None):
     current = get_version(db, table)
     all_upgrades = find_upgrades(schema_dir).items()
     upgrades = [(version, path) for version, path in all_upgrades
                 if version > current]
     for version, path in sorted(upgrades):
+        if maximum and version > maximum:
+            print 'Reached max version: %s' % maximum
+            break
         start = time.time()
         upgrade(db, table, version, path)
         print 'That took %.2f seconds' % (time.time() - start)
@@ -183,12 +186,14 @@ def get_version(db, table):
     return int(say(db, SELECT % table))
 
 
-def main(schema_dir):
+def main(schema_dir, maximum=None):
     settings = get_settings(schema_dir)
     db, table = settings.db, settings.table
 
     table_check(db, table)
-    run_upgrades(db, table, schema_dir)
+    if maximum:
+        print 'Up to max: %s' % maximum
+    run_upgrades(db, table, schema_dir, maximum)
 
 
 def update(schema_dir, version):
@@ -214,6 +219,10 @@ if __name__ == '__main__':
                       action='store_true',
                       help='Print the current schema version (without '
                            'running any migrations)')
+    parser.add_option('-m', '--max', dest='max', default=None,
+                      action='store', type='int',
+                      help='Stop running migrations after the specified '
+                           'revision.')
     options, args = parser.parse_args()
 
     if len(args) != 1:
@@ -229,6 +238,6 @@ if __name__ == '__main__':
         elif options.version:
             version(path)
         else:
-            main(path)
+            main(path, options.max)
     except SchematicError, e:
         print 'Error:', e
