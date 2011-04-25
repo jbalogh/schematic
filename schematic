@@ -198,6 +198,7 @@ def main(schema_dir, maximum=None):
 
 def update(schema_dir, version):
     settings = get_settings(schema_dir)
+    table_check(settings.db, settings.table)
     say(settings.db, UPDATE % (settings.table, version))
 
 
