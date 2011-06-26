@@ -95,9 +95,14 @@ def SettingsError(self, k):
 
 @exception
 def DbError(self, cmd, stdout, stderr, returncode):
-        msg = '\n'.join(["Had trouble running this: %s", "stdout: %s",
-                         "stderr: %s", "returncode: %s"])
-        return msg % (cmd, stdout, stderr, returncode)
+    msg = '\n'.join(["Had trouble running this: %s", "stdout: %s",
+                     "stderr: %s", "returncode: %s"])
+    return msg % (cmd, stdout, stderr, returncode)
+
+
+@exception
+def MultipleMigrations(self, num):
+    return 'Multiple migrations with number: %d' % num
 
 
 def get_settings(schema_dir):
@@ -156,7 +161,10 @@ def find_upgrades(schema_dir):
     for f in files:
         m = re.match('^(\d+)', os.path.basename(f))
         if m:
-            upgrades[int(m.group(0))] = f
+            num = int(m.group(0))
+            if num in upgrades:
+                raise MultipleMigrations(num)
+            upgrades[num] = f
     return upgrades
 
 
