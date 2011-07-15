@@ -292,3 +292,4 @@ if __name__ == '__main__':
             main(path, options.max)
     except SchematicError, e:
         print 'Error:', e
+        sys.exit(1)
